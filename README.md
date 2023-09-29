@@ -5,21 +5,17 @@ Desenvolvendo um controle remoto.
 ## Entrega 1
 
 ### Integrantes
-
-- Nome1
-- Nome2
+- Pedro Ivo Amaral Lima
+- Rodrigo Paoliello de Medeiros
 
 ### Ideia
-
-<!--  Descreva aqui em poucas palavras qual a ideia do seu controle. Se ele vai ser de jogo ou de aplicação -->
+Um pequeno teclado que quando conectado a um computador/notebook diga quais notas deve-se reproduzir.
 
 ### Nome
+`KeyBox`
 
-<!-- De um nome ao seu controle! -->
-
-### Usuários 
-
-<!-- Descreva aqui quem seriam os possíveis usuários deste controle. -->
+### Usuários
+Uma pessoa que produz música e quer um teclado divertido e compacto para ligar no computador.
 
 ### Software/Jogo 
 

@@ -19,7 +19,7 @@ Uma pessoa que produz música e quer um teclado divertido e compacto para ligar 
 
 ### Software/Jogo 
 <!-- Qual software que seu controle vai controlar? -->
-Site [Online Pianist](https://www.onlinepianist.com/virtual-piano)
+Vamos usar o site [Online Pianist](https://www.onlinepianist.com/virtual-piano) para passar ao SO qual som ele deve reproduzir.
 
 ### Jornada do usuários (3 pts)
 <!-- Descreva ao menos duas jornadas de usuários distintos, é para caprichar! -->

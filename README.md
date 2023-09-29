@@ -12,7 +12,7 @@ Desenvolvendo um controle remoto.
 Um pequeno teclado que quando conectado a um computador/notebook diga a ele quais notas deve-se reproduzir.
 
 ### Nome
-~KeyBox~
+*KeyBox*
 
 ### Usuários
 Uma pessoa que produz música e quer um teclado divertido e compacto para ligar no computador.

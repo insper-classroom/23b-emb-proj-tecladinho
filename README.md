@@ -27,9 +27,9 @@ Vamos usar o site [Online Pianist](https://www.onlinepianist.com/virtual-piano) 
 ### Comandos/ Feedbacks (2 pts)
 <!-- Quais são os comandos/ operacões possíveis do seu controle?
 Quais os feedbacks que seu controle vai fornecer ao usuário? -->
-- Tocar nota: Saída do som.
-- Volume da música: Volume muda.
-- Ligar/desligar: LED amarelo estará aceso/apagado.
+- Tocar nota (LED vermelho ou verde irá ascender).
+- Mudar volume da música.
+- Ligar/desligar controle(LED amarelo estará aceso/apagado).
 
 ## In/OUT (3 pts)
 <!-- Para cada Comando/ Feedback do seu controle, associe qual sensores/ atuadores pretende utilizar? Faca em formato de lista, exemplo:

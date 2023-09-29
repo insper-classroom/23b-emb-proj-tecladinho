@@ -9,7 +9,7 @@ Desenvolvendo um controle remoto.
 - Rodrigo Paoliello de Medeiros
 
 ### Ideia
-Um pequeno teclado que quando conectado a um computador/notebook diga a ele quais notas deve-se reproduzir.
+Um pequeno teclado que quando conectado a um computador/notebook passa a ele as notas que devem ser tocadas.
 
 ### Nome
 **KeyBox**
@@ -19,15 +19,18 @@ Uma pessoa que produz música e quer um teclado divertido e compacto para ligar 
 
 ### Software/Jogo 
 <!-- Qual software que seu controle vai controlar? -->
-Vamos usar o site [Online Pianist](https://www.onlinepianist.com/virtual-piano) para passar ao SO qual som ele deve reproduzir.
+Vamos usar o site [Online Pianist](https://www.onlinepianist.com/virtual-piano)
 
 ### Jornada do usuários (3 pts)
 <!-- Descreva ao menos duas jornadas de usuários distintos, é para caprichar! -->
+Gabriel é estudante de engenharia e gosta de produzir música no seu tempo livre e quer um teclado compacto para levar em suas viagens. Ele prefere o KeyBox ao invés de outro teclado comum porque o KeyBox é bem compacto, possuindo apenas uma oitava.
+
+Lucas tem um estúdio profissional de gravação de música e gosta do KeyBox por ser um teclado divertido, ele deixa o KeyBox conectado ao seu computador a todo momento para quando precisar achar uma nota específica. Para ele isso faz mais sentido do que comprar um teclado MIDI só para isso.
 
 ### Comandos/ Feedbacks (2 pts)
 <!-- Quais são os comandos/ operacões possíveis do seu controle?
 Quais os feedbacks que seu controle vai fornecer ao usuário? -->
-- Tocar nota (LED vermelho (1) ou verde (1) irá ascender).
+- Tocar nota (LED verde (1) irá ascender).
 - Mudar volume da música.
 - Ligar/desligar controle(LED amarelo (1) estará aceso/apagado).
 

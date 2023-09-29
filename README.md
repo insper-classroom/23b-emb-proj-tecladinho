@@ -48,6 +48,4 @@ Para cada Comando/ Feedback do seu controle, associe qual sensores/ atuadores pr
 
 ### Design (2 pts)
 
-<!--
-Faca um esboco de como seria esse controle (vai ter uma etapa que terão que detalhar melhor isso).
--->
+<img src="/img/modelo.png">

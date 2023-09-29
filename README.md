@@ -41,6 +41,10 @@ Para cada Comando/ Feedback do seu controle, associe qual sensores/ atuadores pr
 - Avanca música: Push button amarelo
 - Volume da música: Fita de LED indicando potência do som
 -->
+- Tocar nota: Empurar botões verdes ou vermelhos.
+- Volume da música: Subir ou descer fade = aumentar ou diminuir volume.
+- Ligar/desligar: Empurar botão preto.
+- Ligado: LED amarelo estará aceso.
 
 ### Design (2 pts)
 

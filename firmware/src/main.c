@@ -25,11 +25,25 @@
 #define BUT_IDX      11
 #define BUT_IDX_MASK (1 << BUT_IDX)
 
+// PA19 - C
+// PC31 - C#
+// PB2 - D
+// PB3 - D#
+// PC30 - E
+// PA0 - F
+// PC17 - F#
+// PD28 - G
+// PA4 - G#
+// PA3 - A
+// PB1 - A#
+// PB0 - B
+
+
 // usart (bluetooth ou serial)
 // Descomente para enviar dados
 // pela serial debug
 
-//#define DEBUG_SERIAL
+ //#define DEBUG_SERIAL
 
 #ifdef DEBUG_SERIAL
 #define USART_COM USART1
@@ -179,20 +193,20 @@ char buffer_tx[], int timeout) {
 	usart_get_string(usart, buffer_rx, bufferlen, timeout);
 }
 
-void config_usart0(void) {
-	sysclk_enable_peripheral_clock(ID_USART0);
+void config_usart1(void) {
+	sysclk_enable_peripheral_clock(ID_USART1);
 	usart_serial_options_t config;
 	config.baudrate = 9600;
 	config.charlength = US_MR_CHRL_8_BIT;
 	config.paritytype = US_MR_PAR_NO;
 	config.stopbits = false;
-	usart_serial_init(USART0, &config);
-	usart_enable_tx(USART0);
-	usart_enable_rx(USART0);
+	usart_serial_init(USART1, &config);
+	usart_enable_tx(USART1);
+	usart_enable_rx(USART1);
 
-	// RX - PB0  TX - PB1
-	pio_configure(PIOB, PIO_PERIPH_C, (1 << 0), PIO_DEFAULT);
-	pio_configure(PIOB, PIO_PERIPH_C, (1 << 1), PIO_DEFAULT);
+	// RX - PA21 A  TX - PB4 D
+	pio_configure(PIOA, PIO_PERIPH_A, (1 << 21), PIO_DEFAULT);
+	pio_configure(PIOB, PIO_PERIPH_D, (1 << 4), PIO_DEFAULT);
 }
 
 int hc05_init(void) {
@@ -201,7 +215,7 @@ int hc05_init(void) {
 	vTaskDelay( 500 / portTICK_PERIOD_MS);
 	usart_send_command(USART_COM, buffer_rx, 1000, "AT", 100);
 	vTaskDelay( 500 / portTICK_PERIOD_MS);
-	usart_send_command(USART_COM, buffer_rx, 1000, "AT+NAMEagoravai", 100);
+	usart_send_command(USART_COM, buffer_rx, 1000, "AT+NAMERodrigo", 100);
 	vTaskDelay( 500 / portTICK_PERIOD_MS);
 	usart_send_command(USART_COM, buffer_rx, 1000, "AT", 100);
 	vTaskDelay( 500 / portTICK_PERIOD_MS);
@@ -216,7 +230,7 @@ void task_bluetooth(void) {
 	printf("Task Bluetooth started \n");
 	
 	printf("Inicializando HC05 \n");
-	config_usart0();
+	config_usart1();
 	hc05_init();
 
 	// configura LEDs e Botões

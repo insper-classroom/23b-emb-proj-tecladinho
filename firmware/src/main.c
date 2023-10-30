@@ -28,6 +28,80 @@
 #define BUT_IDX      11
 #define BUT_IDX_MASK (1 << BUT_IDX)
 
+// Botões
+// PC13 - C
+// PD30 - C#
+// PD11 - D
+// PA6 - D#
+// PD26 - E
+// PC19 - F
+// PA24 - F#
+// PA2 - G
+// PA4 - G#
+// PA3 - A
+// PB4 - A#
+// PA21 - B
+
+#define BUT_C_PIO      PIOC
+#define BUT_C_PIO_ID   ID_PIOC
+#define BUT_C_IDX      13
+#define BUT_C_IDX_MASK (1 << BUT_C_IDX)
+
+#define BUT_CS_PIO      PIOD
+#define BUT_CS_PIO_ID   ID_PIOD
+#define BUT_CS_IDX      30
+#define BUT_CS_IDX_MASK (1 << BUT_CS_IDX)
+
+#define BUT_D_PIO      PIOD
+#define BUT_D_PIO_ID   ID_PIOD
+#define BUT_D_IDX      11
+#define BUT_D_IDX_MASK (1 << BUT_D_IDX)
+
+#define BUT_DS_PIO      PIOA
+#define BUT_DS_PIO_ID   ID_PIOA
+#define BUT_DS_IDX      6
+#define BUT_DS_IDX_MASK (1 << BUT_DS_IDX)
+
+#define BUT_E_PIO      PIOD
+#define BUT_E_PIO_ID   ID_PIOD
+#define BUT_E_IDX      26
+#define BUT_E_IDX_MASK (1 << BUT_E_IDX)
+
+#define BUT_F_PIO      PIOC
+#define BUT_F_PIO_ID   ID_PIOC
+#define BUT_F_IDX      19
+#define BUT_F_IDX_MASK (1 << BUT_F_IDX)
+
+#define BUT_FS_PIO      PIOA
+#define BUT_FS_PIO_ID   ID_PIOA
+#define BUT_FS_IDX      24
+#define BUT_FS_IDX_MASK (1 << BUT_FS_IDX)
+
+#define BUT_G_PIO      PIOA
+#define BUT_G_PIO_ID   ID_PIOA
+#define BUT_G_IDX      2
+#define BUT_G_IDX_MASK (1 << BUT_G_IDX)
+
+#define BUT_GS_PIO      PIOA
+#define BUT_GS_PIO_ID   ID_PIOA
+#define BUT_GS_IDX      4
+#define BUT_GS_IDX_MASK (1 << BUT_GS_IDX)
+
+#define BUT_A_PIO      PIOA
+#define BUT_A_PIO_ID   ID_PIOA
+#define BUT_A_IDX      3
+#define BUT_A_IDX_MASK (1 << BUT_A_IDX)
+
+#define BUT_AS_PIO      PIOB
+#define BUT_AS_PIO_ID   ID_PIOB
+#define BUT_AS_IDX      4
+#define BUT_AS_IDX_MASK (1 << BUT_AS_IDX)
+
+#define BUT_B_PIO      PIOA
+#define BUT_B_PIO_ID   ID_PIOA
+#define BUT_B_IDX      21
+#define BUT_B_IDX_MASK (1 << BUT_B_IDX)
+
 
 /** RTOS  */
 #define TASK_OLED_STACK_SIZE                (1024*6/sizeof(portSTACK_TYPE))

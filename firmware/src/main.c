@@ -2,9 +2,6 @@
 #include <string.h>
 
 #include "conf_board.h"
-#include "gfx_mono_ug_2832hsweg04.h"
-#include "gfx_mono_text.h"
-#include "sysfont.h"
 
 //#define DEBUG_SERIAL
 
@@ -169,11 +166,11 @@ void io_init(void) {
 
   // Ativa PIOs
   pmc_enable_periph_clk(LED_PIO_ID);
-  pmc_enable_periph_clk(BUT_PIO_ID);
+  pmc_enable_periph_clk(BUT_C_PIO_ID);
 
   // Configura Pinos
   pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
-  pio_configure(BUT_PIO, PIO_INPUT, BUT_IDX_MASK, PIO_PULLUP);
+  pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, PIO_PULLUP);
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
@@ -246,14 +243,6 @@ int hc05_init(void) {
 /* TASKS                                                                */
 /************************************************************************/
 
-static void task_oled(void *pvParameters) {
-  gfx_mono_ssd1306_init();
-  gfx_mono_draw_string("Exemplo RTOS", 0, 0, &sysfont);
-  gfx_mono_draw_string("a", 0, 20, &sysfont);
-
-  for (;;)  {
-  }
-}
 
 void task_bluetooth(void) {
   printf("Task Bluetooth started \n");
@@ -273,7 +262,7 @@ void task_bluetooth(void) {
   // Task não deve retornar.
   while(1) {
     // atualiza valor do botão
-    if(pio_get(BUT_PIO, PIO_INPUT, BUT_IDX_MASK) == 0) {
+    if(pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 0) {
       button1 = '1';
       } else {
       button1 = '0';
@@ -308,11 +297,6 @@ int main(void) {
 
 	/* Initialize the console uart */
 	configure_console();
-
-	/* Create task to control oled */
-	if (xTaskCreate(task_oled, "oled", TASK_OLED_STACK_SIZE, NULL, TASK_OLED_STACK_PRIORITY, NULL) != pdPASS) {
-	  printf("Failed to create oled task\r\n");
-	}
 
 	/* Create task to make led blink */
 	xTaskCreate(task_bluetooth, "BLT", TASK_BLUETOOTH_STACK_SIZE, NULL,	TASK_BLUETOOTH_STACK_PRIORITY, NULL);

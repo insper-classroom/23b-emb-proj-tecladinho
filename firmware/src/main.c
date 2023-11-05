@@ -170,7 +170,7 @@ void io_init(void) {
 
   // Configura Pinos
   pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
-  pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, PIO_PULLUP);
+  pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, 0);
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
@@ -257,22 +257,34 @@ void task_bluetooth(void) {
   io_init();
 
   char button1 = '0';
+  char button2 = '0';
   char eof = 'X';
 
   // Task não deve retornar.
   while(1) {
     // atualiza valor do botão
-    if(pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 0) {
+    if(pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 1) {
       button1 = '1';
       } else {
       button1 = '0';
     }
+	
+	if(pio_get(BUT_PIO, PIO_INPUT, BUT_IDX_MASK) == 1) {
+		button2 = '0';
+		} else {
+		button2 = '1';
+	}
 
     // envia status botão
     while(!usart_is_tx_ready(USART_COM)) {
       vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     usart_write(USART_COM, button1);
+	
+	while(!usart_is_tx_ready(USART_COM)) {
+		vTaskDelay(10 / portTICK_PERIOD_MS);
+	}
+	usart_write(USART_COM, button2);
     
     // envia fim de pacote
     while(!usart_is_tx_ready(USART_COM)) {

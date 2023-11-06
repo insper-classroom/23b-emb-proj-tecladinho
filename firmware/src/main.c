@@ -174,7 +174,7 @@ void io_init(void) {
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
-  uint32_t i ;
+  uint32_t i;
 
   while(*(pstring + i))
   if(uart_is_tx_empty(USART_COM))
@@ -256,9 +256,9 @@ void task_bluetooth(void) {
   // configura LEDs e Botões
   io_init();
 
-  char button1 = '0';
-  char button2 = '0';
-  char eof = 'X';
+  volatile char button1 = '0';
+  volatile char button2 = '0';
+  volatile char eof = 'X';
 
   // Task não deve retornar.
   while(1) {

@@ -6,10 +6,11 @@ import logging
 
 class MyControllerMap:
     def __init__(self):
-        self.button = {
-            'A': 'q',
-            'S': 'w',
-            } # Fast forward (10 seg) pro Youtube
+        # self.button = {
+        #     'A': 'q',
+        #     'S': 'w',
+        #     } # Fast forward (10 seg) pro Youtube
+        self.button = ['Q','2','W','3','E','R']
 
 class SerialControllerInterface:
     # Protocolo
@@ -28,25 +29,27 @@ class SerialControllerInterface:
             self.incoming = self.ser.read()
             logging.debug("Received INCOMING: {}".format(self.incoming))
 
-        data = self.ser.read()
-        logging.debug("Received DATA: {}".format(data))
+        
+        for char in self.mapping.button:
+            data = self.ser.read()
+            logging.debug("Received DATA: {}".format(data))
 
-        if data == b'1':
-            logging.info("KEYDOWN A")
-            pyautogui.keyDown(self.mapping.button['A'])
-        elif data == b'0':
-            logging.info("KEYUP A")
-            pyautogui.keyUp(self.mapping.button['A'])
+            if data == b'1':
+                logging.info(f"KEYDOWN {char}")
+                pyautogui.keyDown(self.mapping.button['char'])
+            elif data == b'0':
+                logging.info(f"KEYUP {char}")
+                pyautogui.keyUp(self.mapping.button['char'])
 
-        data = self.ser.read()
-        logging.debug("Received DATA: {}".format(data))
+        # data = self.ser.read()
+        # logging.debug("Received DATA: {}".format(data))
 
-        if data == b'1':
-            logging.info("KEYDOWN S")
-            pyautogui.keyDown(self.mapping.button['S'])
-        elif data == b'0':
-            logging.info("KEYUP S")
-            pyautogui.keyUp(self.mapping.button['S'])
+        # if data == b'1':
+        #     logging.info("KEYDOWN S")
+        #     pyautogui.keyDown(self.mapping.button['S'])
+        # elif data == b'0':
+        #     logging.info("KEYUP S")
+        #     pyautogui.keyUp(self.mapping.button['S'])
 
         self.incoming = self.ser.read()
         print()

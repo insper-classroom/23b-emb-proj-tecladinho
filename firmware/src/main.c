@@ -167,10 +167,12 @@ void io_init(void) {
   // Ativa PIOs
   pmc_enable_periph_clk(LED_PIO_ID);
   pmc_enable_periph_clk(BUT_C_PIO_ID);
+  pmc_enable_periph_clk(BUT_CS_PIO_ID);
 
   // Configura Pinos
   pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
   pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, 0);
+  pio_configure(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK, 0);
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
@@ -256,9 +258,9 @@ void task_bluetooth(void) {
   // configura LEDs e Botões
   io_init();
 
-  volatile char button1 = '0';
-  volatile char button2 = '0';
-  volatile char eof = 'X';
+  char button1 = '0';
+  char button2 = '0';
+  char eof = 'X';
 
   // Task não deve retornar.
   while(1) {
@@ -269,7 +271,7 @@ void task_bluetooth(void) {
       button1 = '0';
     }
 	
-	if(pio_get(BUT_PIO, PIO_INPUT, BUT_IDX_MASK) == 1) {
+	if(pio_get(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK) == 1) {
 		button2 = '0';
 		} else {
 		button2 = '1';

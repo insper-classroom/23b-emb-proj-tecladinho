@@ -10,7 +10,7 @@ class MyControllerMap:
         #     'A': 'q',
         #     'S': 'w',
         #     } # Fast forward (10 seg) pro Youtube
-        self.button = ['Q','2','W','3','E','R']
+        self.button = ['q','2','w','3','e','r']
 
 class SerialControllerInterface:
     # Protocolo

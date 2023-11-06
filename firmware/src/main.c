@@ -258,8 +258,8 @@ void task_bluetooth(void) {
   // configura LEDs e Botões
   io_init();
 
-  char button1 = '0';
-  char button2 = '0';
+  char button1;
+  char button2;
   char eof = 'X';
 
   // Task não deve retornar.
@@ -267,13 +267,15 @@ void task_bluetooth(void) {
     // atualiza valor do botão
     if(pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 1) {
       button1 = '1';
-      } else {
+      }
+      else {
       button1 = '0';
     }
 	
 	if(pio_get(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK) == 1) {
 		button2 = '0';
-		} else {
+		}
+    else {
 		button2 = '1';
 	}
 

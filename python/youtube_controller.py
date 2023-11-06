@@ -21,36 +21,25 @@ class SerialControllerInterface:
         self.ser = serial.Serial(port, baudrate=baudrate)
         self.mapping = MyControllerMap()
         self.incoming = '0'
+        self.update_c = 0
         pyautogui.PAUSE = 0  ## remove delay
     
     def update(self):
         ## Sync protocol
         while self.incoming != b'X':
             self.incoming = self.ser.read()
-            logging.debug("Received INCOMING: {}".format(self.incoming))
+            logging.debug("Received INCOMING: {}".format(self.incoming)) if (self.update_c%20==0) else print(end='')
 
-        
         for char in self.mapping.button:
             data = self.ser.read()
-            logging.debug("Received DATA: {}".format(data))
+            logging.debug("Received DATA: {}".format(data)) if (self.update_c%20==0) else print(end='')
 
             if data == b'1':
-                logging.info(f"KEYDOWN {char}")
+                logging.info(f"KEYDOWN {char}") if (self.update_c%20==0) else print(end='')
                 pyautogui.keyDown(char)
             elif data == b'0':
-                logging.info(f"KEYUP {char}")
+                logging.info(f"KEYUP {char}") if (self.update_c%20==0) else print(end='')
                 pyautogui.keyUp(char)
-
-        # data = self.ser.read()
-        # logging.debug("Received DATA: {}".format(data))
-
-        # if data == b'1':
-        #     logging.info("KEYDOWN S")
-        #     pyautogui.keyDown(self.mapping.button['S'])
-        # elif data == b'0':
-        #     logging.info("KEYUP S")
-        #     pyautogui.keyUp(self.mapping.button['S'])
-
         self.incoming = self.ser.read()
         print()
 

@@ -384,11 +384,11 @@ void task_bluetooth(void) {
       vTaskDelay(10 / portTICK_PERIOD_MS);
     }
     usart_write(USART_COM, button1);
-	
-	while(!usart_is_tx_ready(USART_COM)) {
-		vTaskDelay(10 / portTICK_PERIOD_MS);
-	}
-	usart_write(USART_COM, button2);
+
+    while(!usart_is_tx_ready(USART_COM)) {
+      vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+    usart_write(USART_COM, button2);
     
     // envia fim de pacote
     while(!usart_is_tx_ready(USART_COM)) {

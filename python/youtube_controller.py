@@ -36,10 +36,10 @@ class SerialControllerInterface:
 
             if data == b'1':
                 logging.info(f"KEYDOWN {char}")
-                pyautogui.keyDown(self.mapping.button['char'])
+                pyautogui.keyDown(char)
             elif data == b'0':
                 logging.info(f"KEYUP {char}")
-                pyautogui.keyUp(self.mapping.button['char'])
+                pyautogui.keyUp(char)
 
         # data = self.ser.read()
         # logging.debug("Received DATA: {}".format(data))

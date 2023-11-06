@@ -168,11 +168,31 @@ void io_init(void) {
   pmc_enable_periph_clk(LED_PIO_ID);
   pmc_enable_periph_clk(BUT_C_PIO_ID);
   pmc_enable_periph_clk(BUT_CS_PIO_ID);
+  pmc_enable_periph_clk(BUT_D_PIO_ID);
+  pmc_enable_periph_clk(BUT_DS_PIO_ID);
+  pmc_enable_periph_clk(BUT_E_PIO_ID);
+  pmc_enable_periph_clk(BUT_F_PIO_ID);
+  pmc_enable_periph_clk(BUT_FS_PIO_ID);
+  pmc_enable_periph_clk(BUT_G_PIO_ID);
+  pmc_enable_periph_clk(BUT_GS_PIO_ID);
+  pmc_enable_periph_clk(BUT_A_PIO_ID);
+  pmc_enable_periph_clk(BUT_AS_PIO_ID);
+  pmc_enable_periph_clk(BUT_B_PIO_ID);
 
   // Configura Pinos
   pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
   pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, 0);
   pio_configure(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK, 0);
+  pio_configure(BUT_D_PIO, PIO_INPUT, BUT_D_IDX_MASK, 0);
+  pio_configure(BUT_DS_PIO, PIO_INPUT, BUT_DS_IDX_MASK, 0);
+  pio_configure(BUT_E_PIO, PIO_INPUT, BUT_E_IDX_MASK, 0);
+  pio_configure(BUT_F_PIO, PIO_INPUT, BUT_F_IDX_MASK, 0);
+  pio_configure(BUT_FS_PIO, PIO_INPUT, BUT_FS_IDX_MASK, 0);
+  pio_configure(BUT_G_PIO, PIO_INPUT, BUT_G_IDX_MASK, 0);
+  pio_configure(BUT_GS_PIO, PIO_INPUT, BUT_GS_IDX_MASK, 0);
+  pio_configure(BUT_A_PIO, PIO_INPUT, BUT_A_IDX_MASK, 0);
+  pio_configure(BUT_AS_PIO, PIO_INPUT, BUT_AS_IDX_MASK, 0);
+  pio_configure(BUT_B_PIO, PIO_INPUT, BUT_B_IDX_MASK, 0);
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
@@ -260,6 +280,16 @@ void task_bluetooth(void) {
 
   char button1;
   char button2;
+  char button3;
+  char button4;
+  char button5;
+  char button6;
+  char button7;
+  char button8;
+  char button9;
+  char button10;
+  char button11;
+  char button12;
   char eof = 'X';
 
   // Task não deve retornar.
@@ -267,17 +297,87 @@ void task_bluetooth(void) {
     // atualiza valor do botão
     if(pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 1) {
       button1 = '1';
-      }
-      else {
+    }
+    else {
       button1 = '0';
     }
 	
-	if(pio_get(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK) == 1) {
-		button2 = '0';
+	  if(pio_get(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK) == 1) {
+		  button2 = '1';
 		}
     else {
-		button2 = '1';
-	}
+		  button2 = '0';
+	  }
+
+    if(pio_get(BUT_D_PIO, PIO_INPUT, BUT_D_IDX_MASK) == 1) {
+      button3 = '1';
+    }
+    else {
+      button3 = '0';
+    }
+
+    if(pio_get(BUT_DS_PIO, PIO_INPUT, BUT_DS_IDX_MASK) == 1) {
+      button4 = '1';
+    }
+    else {
+      button4 = '0';
+    }
+
+    if(pio_get(BUT_E_PIO, PIO_INPUT, BUT_E_IDX_MASK) == 1) {
+      button5 = '1';
+    }
+    else {
+      button5 = '0';
+    }
+
+    if(pio_get(BUT_F_PIO, PIO_INPUT, BUT_F_IDX_MASK) == 1) {
+      button6 = '1';
+    }
+    else {
+      button6 = '0';
+    }
+
+    if(pio_get(BUT_FS_PIO, PIO_INPUT, BUT_FS_IDX_MASK) == 1) {
+      button7 = '1';
+    }
+    else {
+      button7 = '0';
+    }
+
+    if(pio_get(BUT_G_PIO, PIO_INPUT, BUT_G_IDX_MASK) == 1) {
+      button8 = '1';
+    }
+    else {
+      button8 = '0';
+    }
+
+    if(pio_get(BUT_GS_PIO, PIO_INPUT, BUT_GS_IDX_MASK) == 1) {
+      button9 = '1';
+    }
+    else {
+      button9 = '0';
+    }
+
+    if(pio_get(BUT_A_PIO, PIO_INPUT, BUT_A_IDX_MASK) == 1) {
+      button10 = '1';
+    }
+    else {
+      button10 = '0';
+    }
+
+    if(pio_get(BUT_AS_PIO, PIO_INPUT, BUT_AS_IDX_MASK) == 1) {
+      button11 = '1';
+    }
+    else {
+      button11 = '0';
+    }
+
+    if(pio_get(BUT_B_PIO, PIO_INPUT, BUT_B_IDX_MASK) == 1) {
+      button12 = '1';
+    }
+    else {
+      button12 = '0';
+    }
 
     // envia status botão
     while(!usart_is_tx_ready(USART_COM)) {
@@ -297,7 +397,7 @@ void task_bluetooth(void) {
     usart_write(USART_COM, eof);
 
     // dorme por 500 ms
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
   }
 }
 

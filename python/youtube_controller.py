@@ -10,7 +10,7 @@ class MyControllerMap:
         #     'A': 'q',
         #     'S': 'w',
         #     } # Fast forward (10 seg) pro Youtube
-        self.button = ['q','2','w','3','e','r']
+        self.button = ['q','2','w']
 
 class SerialControllerInterface:
     # Protocolo
@@ -40,8 +40,10 @@ class SerialControllerInterface:
             elif data == b'0':
                 logging.info(f"KEYUP {char}") if (self.update_c%20==0) else print(end='')
                 pyautogui.keyUp(char)
+
         self.incoming = self.ser.read()
-        print()
+        print() if (self.update_c%20==0) else print(end='')
+        self.update_c += 1
 
 
 class DummyControllerInterface:

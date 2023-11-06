@@ -113,8 +113,23 @@ extern void vApplicationTickHook(void);
 extern void vApplicationMallocFailedHook(void);
 extern void xPortSysTickHandler(void);
 
+QueueHandle_t xQueueBut;
+
 /** prototypes */
-void but_callback(void);
+void but_C_callback(void);
+void but_CS_callback(void);
+void but_D_callback(void);
+void but_DS_callback(void);
+void but_E_callback(void);
+void but_F_callback(void);
+void but_FS_callback(void);
+void but_G_callback(void);
+void but_GS_callback(void);
+void but_A_callback(void);
+void but_AS_callback(void);
+void but_B_callback(void);
+
+
 static void BUT_init(void);
 void io_init(void);
 
@@ -139,8 +154,76 @@ extern void vApplicationMallocFailedHook(void) {
 /* handlers / callbacks                                                 */
 /************************************************************************/
 
-void but_callback(void) {
-  
+void but_C_callback(void) {
+	uint32_t botao = 1;
+	xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+	botao = 0;
+}
+
+void but_CS_callback(void) {
+  uint32_t botao = 2;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_D_callback(void) {
+  uint32_t botao = 3;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_DS_callback(void) {
+  uint32_t botao = 4;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_E_callback(void) {
+  uint32_t botao = 5;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_F_callback(void) {
+  uint32_t botao = 6;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_FS_callback(void) {
+  uint32_t botao = 7;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_G_callback(void) {
+  uint32_t botao = 8;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_GS_callback(void) {
+  uint32_t botao = 9;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_A_callback(void) {
+  uint32_t botao = 10;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_AS_callback(void) {
+  uint32_t botao = 11;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
+}
+
+void but_B_callback(void) {
+  uint32_t botao = 12;
+  xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+  botao = 0;
 }
 
 /************************************************************************/
@@ -166,33 +249,141 @@ void io_init(void) {
 
   // Ativa PIOs
   pmc_enable_periph_clk(LED_PIO_ID);
-  pmc_enable_periph_clk(BUT_C_PIO_ID);
-  pmc_enable_periph_clk(BUT_CS_PIO_ID);
-  pmc_enable_periph_clk(BUT_D_PIO_ID);
-  pmc_enable_periph_clk(BUT_DS_PIO_ID);
-  pmc_enable_periph_clk(BUT_E_PIO_ID);
-  pmc_enable_periph_clk(BUT_F_PIO_ID);
-  pmc_enable_periph_clk(BUT_FS_PIO_ID);
-  pmc_enable_periph_clk(BUT_G_PIO_ID);
-  pmc_enable_periph_clk(BUT_GS_PIO_ID);
-  pmc_enable_periph_clk(BUT_A_PIO_ID);
-  pmc_enable_periph_clk(BUT_AS_PIO_ID);
-  pmc_enable_periph_clk(BUT_B_PIO_ID);
 
   // Configura Pinos
   pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
-  pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, 0);
-  pio_configure(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK, 0);
-  pio_configure(BUT_D_PIO, PIO_INPUT, BUT_D_IDX_MASK, 0);
-  pio_configure(BUT_DS_PIO, PIO_INPUT, BUT_DS_IDX_MASK, 0);
-  pio_configure(BUT_E_PIO, PIO_INPUT, BUT_E_IDX_MASK, 0);
-  pio_configure(BUT_F_PIO, PIO_INPUT, BUT_F_IDX_MASK, 0);
-  pio_configure(BUT_FS_PIO, PIO_INPUT, BUT_FS_IDX_MASK, 0);
-  pio_configure(BUT_G_PIO, PIO_INPUT, BUT_G_IDX_MASK, 0);
-  pio_configure(BUT_GS_PIO, PIO_INPUT, BUT_GS_IDX_MASK, 0);
-  pio_configure(BUT_A_PIO, PIO_INPUT, BUT_A_IDX_MASK, 0);
-  pio_configure(BUT_AS_PIO, PIO_INPUT, BUT_AS_IDX_MASK, 0);
-  pio_configure(BUT_B_PIO, PIO_INPUT, BUT_B_IDX_MASK, 0);
+
+  pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_C_PIO,
+                  BUT_C_PIO_ID,
+                  BUT_C_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_C_callback);
+  pio_enable_interrupt(BUT_C_PIO, BUT_C_IDX_MASK);
+  pio_get_interrupt_status(BUT_C_PIO);
+  NVIC_EnableIRQ(BUT_C_PIO_ID);
+  NVIC_SetPriority(BUT_C_PIO_ID, 4);
+
+  pio_configure(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_CS_PIO,
+                  BUT_CS_PIO_ID,
+                  BUT_CS_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_CS_callback);
+  pio_enable_interrupt(BUT_CS_PIO, BUT_CS_IDX_MASK);
+  pio_get_interrupt_status(BUT_CS_PIO);
+  NVIC_EnableIRQ(BUT_CS_PIO_ID);
+  NVIC_SetPriority(BUT_CS_PIO_ID, 4);
+
+  pio_configure(BUT_D_PIO, PIO_INPUT, BUT_D_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_D_PIO,
+                  BUT_D_PIO_ID,
+                  BUT_D_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_D_callback);
+  pio_enable_interrupt(BUT_D_PIO, BUT_D_IDX_MASK);
+  pio_get_interrupt_status(BUT_D_PIO);
+  NVIC_EnableIRQ(BUT_D_PIO_ID);
+  NVIC_SetPriority(BUT_D_PIO_ID, 4);
+
+  pio_configure(BUT_DS_PIO, PIO_INPUT, BUT_DS_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_DS_PIO,
+                  BUT_DS_PIO_ID,
+                  BUT_DS_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_DS_callback);
+  pio_enable_interrupt(BUT_DS_PIO, BUT_DS_IDX_MASK);
+  pio_get_interrupt_status(BUT_DS_PIO);
+  NVIC_EnableIRQ(BUT_DS_PIO_ID);
+  NVIC_SetPriority(BUT_DS_PIO_ID, 4);
+
+  pio_configure(BUT_E_PIO, PIO_INPUT, BUT_E_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_E_PIO,
+                  BUT_E_PIO_ID,
+                  BUT_E_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_E_callback);
+  pio_enable_interrupt(BUT_E_PIO, BUT_E_IDX_MASK);
+  pio_get_interrupt_status(BUT_E_PIO);
+  NVIC_EnableIRQ(BUT_E_PIO_ID);
+  NVIC_SetPriority(BUT_E_PIO_ID, 4);
+
+  pio_configure(BUT_F_PIO, PIO_INPUT, BUT_F_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_F_PIO,
+                  BUT_F_PIO_ID,
+                  BUT_F_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_F_callback);
+  pio_enable_interrupt(BUT_F_PIO, BUT_F_IDX_MASK);
+  pio_get_interrupt_status(BUT_F_PIO);
+  NVIC_EnableIRQ(BUT_F_PIO_ID);
+  NVIC_SetPriority(BUT_F_PIO_ID, 4);
+
+  pio_configure(BUT_FS_PIO, PIO_INPUT, BUT_FS_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_FS_PIO,
+                  BUT_FS_PIO_ID,
+                  BUT_FS_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_FS_callback);
+  pio_enable_interrupt(BUT_FS_PIO, BUT_FS_IDX_MASK);
+  pio_get_interrupt_status(BUT_FS_PIO);
+  NVIC_EnableIRQ(BUT_FS_PIO_ID);
+  NVIC_SetPriority(BUT_FS_PIO_ID, 4);
+
+  pio_configure(BUT_G_PIO, PIO_INPUT, BUT_G_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_G_PIO,
+                  BUT_G_PIO_ID,
+                  BUT_G_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_G_callback);
+  pio_enable_interrupt(BUT_G_PIO, BUT_G_IDX_MASK);
+  pio_get_interrupt_status(BUT_G_PIO);
+  NVIC_EnableIRQ(BUT_G_PIO_ID);
+  NVIC_SetPriority(BUT_G_PIO_ID, 4);
+
+  pio_configure(BUT_GS_PIO, PIO_INPUT, BUT_GS_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_GS_PIO,
+                  BUT_GS_PIO_ID,
+                  BUT_GS_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_GS_callback);
+  pio_enable_interrupt(BUT_GS_PIO, BUT_GS_IDX_MASK);
+  pio_get_interrupt_status(BUT_GS_PIO);
+  NVIC_EnableIRQ(BUT_GS_PIO_ID);
+  NVIC_SetPriority(BUT_GS_PIO_ID, 4);
+
+  pio_configure(BUT_A_PIO, PIO_INPUT, BUT_A_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_A_PIO,
+                  BUT_A_PIO_ID,
+                  BUT_A_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_A_callback);
+  pio_enable_interrupt(BUT_A_PIO, BUT_A_IDX_MASK);
+  pio_get_interrupt_status(BUT_A_PIO);
+  NVIC_EnableIRQ(BUT_A_PIO_ID);
+  NVIC_SetPriority(BUT_A_PIO_ID, 4);
+
+  pio_configure(BUT_AS_PIO, PIO_INPUT, BUT_AS_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_AS_PIO,
+                  BUT_AS_PIO_ID,
+                  BUT_AS_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_AS_callback);
+  pio_enable_interrupt(BUT_AS_PIO, BUT_AS_IDX_MASK);
+  pio_get_interrupt_status(BUT_AS_PIO);
+  NVIC_EnableIRQ(BUT_AS_PIO_ID);
+  NVIC_SetPriority(BUT_AS_PIO_ID, 4);
+
+  pio_configure(BUT_B_PIO, PIO_INPUT, BUT_B_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
+  pio_handler_set(BUT_B_PIO,
+                  BUT_B_PIO_ID,
+                  BUT_B_IDX_MASK,
+                  PIO_IT_FALL_EDGE,
+                  but_B_callback);
+  pio_enable_interrupt(BUT_B_PIO, BUT_B_IDX_MASK);
+  pio_get_interrupt_status(BUT_B_PIO);
+  NVIC_EnableIRQ(BUT_B_PIO_ID);
+  NVIC_SetPriority(BUT_B_PIO_ID, 4);
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
@@ -270,125 +461,38 @@ void task_bluetooth(void) {
   printf("Task Bluetooth started \n");
   
   printf("Inicializando HC05 \n");
+
   #ifndef DEBUG_SERIAL
   config_usart0();
   #endif
+  
   hc05_init();
-
+ 
   // configura LEDs e Botões
   io_init();
+  printf("AAAA\n");
+  
 
-  char button1;
-  char button2;
-  char button3;
-  char button4;
-  char button5;
-  char button6;
-  char button7;
-  char button8;
-  char button9;
-  char button10;
-  char button11;
-  char button12;
+  uint32_t botao = 0;
+
+  char button = botao + '0';
   char eof = 'X';
 
   // Task não deve retornar.
   while(1) {
+	  printf("A\n");
     // atualiza valor do botão
-    if(pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 1) {
-      button1 = '1';
-    }
-    else {
-      button1 = '0';
-    }
-	
-	  if(pio_get(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK) == 1) {
-		  button2 = '1';
-		}
-    else {
-		  button2 = '0';
-	  }
-
-    if(pio_get(BUT_D_PIO, PIO_INPUT, BUT_D_IDX_MASK) == 1) {
-      button3 = '1';
-    }
-    else {
-      button3 = '0';
-    }
-
-    if(pio_get(BUT_DS_PIO, PIO_INPUT, BUT_DS_IDX_MASK) == 1) {
-      button4 = '1';
-    }
-    else {
-      button4 = '0';
-    }
-
-    if(pio_get(BUT_E_PIO, PIO_INPUT, BUT_E_IDX_MASK) == 1) {
-      button5 = '1';
-    }
-    else {
-      button5 = '0';
-    }
-
-    if(pio_get(BUT_F_PIO, PIO_INPUT, BUT_F_IDX_MASK) == 1) {
-      button6 = '1';
-    }
-    else {
-      button6 = '0';
-    }
-
-    if(pio_get(BUT_FS_PIO, PIO_INPUT, BUT_FS_IDX_MASK) == 1) {
-      button7 = '1';
-    }
-    else {
-      button7 = '0';
-    }
-
-    if(pio_get(BUT_G_PIO, PIO_INPUT, BUT_G_IDX_MASK) == 1) {
-      button8 = '1';
-    }
-    else {
-      button8 = '0';
-    }
-
-    if(pio_get(BUT_GS_PIO, PIO_INPUT, BUT_GS_IDX_MASK) == 1) {
-      button9 = '1';
-    }
-    else {
-      button9 = '0';
-    }
-
-    if(pio_get(BUT_A_PIO, PIO_INPUT, BUT_A_IDX_MASK) == 1) {
-      button10 = '1';
-    }
-    else {
-      button10 = '0';
-    }
-
-    if(pio_get(BUT_AS_PIO, PIO_INPUT, BUT_AS_IDX_MASK) == 1) {
-      button11 = '1';
-    }
-    else {
-      button11 = '0';
-    }
-
-    if(pio_get(BUT_B_PIO, PIO_INPUT, BUT_B_IDX_MASK) == 1) {
-      button12 = '1';
-    }
-    else {
-      button12 = '0';
+    if (xQueueReceive(xQueueBut, &botao, (TickType_t) 0)) {
+		printf("B\n");
+		button = botao + '0';
     }
 
     // envia status botão
-    while(!usart_is_tx_ready(USART_COM)) {
-      vTaskDelay(10 / portTICK_PERIOD_MS);
-    }
-    usart_write(USART_COM, button1);
 
     while(!usart_is_tx_ready(USART_COM)) {
       vTaskDelay(10 / portTICK_PERIOD_MS);
     }
-    usart_write(USART_COM, button2);
+    usart_write(USART_COM, button);
     
     // envia fim de pacote
     while(!usart_is_tx_ready(USART_COM)) {
@@ -407,6 +511,9 @@ void task_bluetooth(void) {
 
 
 int main(void) {
+	  xQueueBut = xQueueCreate(32, sizeof(uint32_t));
+	  if (xQueueBut == NULL)
+		printf("falha em criar a queue \n");
 	/* Initialize the SAM system */
 	sysclk_init();
 	board_init();

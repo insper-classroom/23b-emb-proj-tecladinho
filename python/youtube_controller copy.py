@@ -6,21 +6,11 @@ import logging
 
 class MyControllerMap:
     def __init__(self):
-        self.button = {
-            0x1: 'q',
-            0x2: '2',
-            0x3: 'w',
-            0x4: '3',
-            0x5: 'e',
-            0x6: 'r',
-            0x7: '5',
-            0x8: 't',
-            0x9: '6',
-            0xa: 'y',
-            0xb: '7',
-            0xc: 'u',
-            } # Fast forward (10 seg) pro Youtube
-        # self.button = ['q','2','w']
+        # self.button = {
+        #     'A': 'q',
+        #     'S': 'w',
+        #     } # Fast forward (10 seg) pro Youtube
+        self.button = ['q','2','w','3','e','r']
 
 class SerialControllerInterface:
     # Protocolo
@@ -38,21 +28,20 @@ class SerialControllerInterface:
         ## Sync protocol
         while self.incoming != b'X':
             self.incoming = self.ser.read()
-            logging.debug("Received INCOMING: {}".format(self.incoming)) #if (self.update_c%20==0) else print(end='')
+            logging.debug("Received INCOMING: {}".format(self.incoming)) if (self.update_c%20==0) else print(end='')
 
-        data = self.ser.read()
-        logging.debug("Received DATA: {}".format(data)) #if (self.update_c%20==0) else print(end='')
+        for char in self.mapping.button:
+            data = self.ser.read()
+            logging.debug("Received DATA: {}".format(data)) if (self.update_c%20==0) else print(end='')
 
-        if data == 0x1:
-            logging.info(f"KEYUP {self.button[data]}") #if (self.update_c%20==0) else print(end='')
-            pyautogui.keyUp(self.button[data])
-        else:
-            logging.info(f"KEYDOWN {self.button[data]}") #if (self.update_c%20==0) else print(end='')
-            pyautogui.keyDown(self.button[data])
-
+            if data == b'1':
+                logging.info(f"KEYDOWN {char}") if (self.update_c%20==0) else print(end='')
+                pyautogui.keyDown(char)
+            elif data == b'0':
+                logging.info(f"KEYUP {char}") if (self.update_c%20==0) else print(end='')
+                pyautogui.keyUp(char)
         self.incoming = self.ser.read()
-        print() #if (self.update_c%20==0) else print(end='')
-        self.update_c += 1
+        print()
 
 
 class DummyControllerInterface:

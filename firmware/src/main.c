@@ -14,10 +14,15 @@
 #endif
 
 // LEDs
-#define LED_PIO      PIOC
-#define LED_PIO_ID   ID_PIOC
-#define LED_IDX      8
-#define LED_IDX_MASK (1 << LED_IDX)
+#define LED1_PIO      PIOD
+#define LED1_PIO_ID   ID_PIOD
+#define LED1_IDX      20
+#define LED1_IDX_MASK (1 << LED1_IDX)
+
+#define LED2_PIO      PIOD
+#define LED2_PIO_ID   ID_PIOD
+#define LED2_IDX      22
+#define LED2_IDX_MASK (1 << LED2_IDX)
 
 // Botão
 #define BUT_PIO      PIOA
@@ -28,7 +33,7 @@
 // Botões
 // PD28 - ON/OFF
 // PC13 - C
-// PD30 - C#
+// PD25 - C#
 // PD11 - D
 // PA6 - D#
 // PD26 - E
@@ -39,7 +44,7 @@
 // PA3 - A
 // PB4 - A#
 // PA21 - B
-// PB3 - Fader Volume
+// PD30 - Fader Volume
 
 #define BUT_ON_OFF_PIO             	PIOD
 #define BUT_ON_OFF_PIO_ID          	ID_PIOD
@@ -53,7 +58,7 @@
 
 #define BUT_CS_PIO      PIOD
 #define BUT_CS_PIO_ID   ID_PIOD
-#define BUT_CS_IDX      30
+#define BUT_CS_IDX      25
 #define BUT_CS_IDX_MASK (1 << BUT_CS_IDX)
 
 #define BUT_D_PIO      PIOD
@@ -108,7 +113,7 @@
 
 #define AFEC_POT0 AFEC0
 #define AFEC_POT0_ID ID_AFEC0
-#define AFEC_POT0_CHANNEL 2 // Canal do pino PB3
+#define AFEC_POT0_CHANNEL 0 // Canal do pino PD30
 
 /** RTOS  */
 #define TASK_OLED_STACK_SIZE                (1024*6/sizeof(portSTACK_TYPE))
@@ -117,8 +122,8 @@
 #define TASK_BLUETOOTH_STACK_SIZE            (4096/sizeof(portSTACK_TYPE))
 #define TASK_BLUETOOTH_STACK_PRIORITY        (tskIDLE_PRIORITY)
 
-#define TASK_ADC_STACK_SIZE            (4096/sizeof(portSTACK_TYPE))
-#define TASK_ADC_STACK_PRIORITY        (tskIDLE_PRIORITY)
+#define TASK_HANDSHAKE_STACK_SIZE            (4096/sizeof(portSTACK_TYPE))
+#define TASK_HANDSHAKE_STACK_PRIORITY        (tskIDLE_PRIORITY)
 
 extern void vApplicationStackOverflowHook(xTaskHandle *pxTask,  signed char *pcTaskName);
 extern void vApplicationIdleHook(void);
@@ -128,6 +133,8 @@ extern void xPortSysTickHandler(void);
 
 QueueHandle_t xQueueBut;
 QueueHandle_t xQueueADC;
+
+TaskHandle_t xTaskHandshakeHandle;
 
 /** prototypes */
 void but_C_callback(void);
@@ -173,10 +180,12 @@ void but_C_callback(void) {
   if (!pio_get(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 1;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_set(LED1_PIO, LED1_IDX_MASK);
   }
 }
 
@@ -258,6 +267,7 @@ void but_B_callback(void) {
 
 static void AFEC_callback(void) {
   uint32_t adc = afec_channel_get_value(AFEC_POT0, AFEC_POT0_CHANNEL);
+  printf("ADC: %d\n", adc);
   xQueueSendFromISR(xQueueADC, (void *)&adc, 0);
 }
 
@@ -282,16 +292,14 @@ static void configure_console(void) {
 
 void io_init(void) {
 
-  // Ativa PIOs
-  pmc_enable_periph_clk(LED_PIO_ID);
-
   pmc_enable_periph_clk(ID_PIOA);
   pmc_enable_periph_clk(ID_PIOB);
   pmc_enable_periph_clk(ID_PIOC);
   pmc_enable_periph_clk(ID_PIOD);
 
   // Configura Pinos
-  pio_configure(LED_PIO, PIO_OUTPUT_0, LED_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
+  pio_configure(LED1_PIO, PIO_OUTPUT_0, LED1_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
+  pio_configure(LED2_PIO, PIO_OUTPUT_0, LED2_IDX_MASK, PIO_DEFAULT | PIO_DEBOUNCE);
 
   pio_configure(BUT_C_PIO, PIO_INPUT, BUT_C_IDX_MASK, PIO_PULLUP | PIO_DEBOUNCE);
   pio_handler_set(BUT_C_PIO,
@@ -537,6 +545,7 @@ int hc05_init(void) {
   vTaskDelay( 500 / portTICK_PERIOD_MS);
 }
 
+
 /************************************************************************/
 /* TASKS                                                                */
 /************************************************************************/
@@ -546,14 +555,7 @@ void task_bluetooth(void) {
   
   printf("Inicializando HC05 \n");
 
-  #ifndef DEBUG_SERIAL
-  config_usart0();
-  #endif
-  
-  hc05_init();
- 
-  // configura LEDs e Botões
-  io_init();
+  vTaskSuspend(xTaskHandshakeHandle);
 
   uint32_t adc = 0;
   uint32_t botao = 0;
@@ -561,7 +563,6 @@ void task_bluetooth(void) {
 
   // Task não deve retornar.
   while(1) {
-	  printf("A\n");
     // atualiza valor do botão
     if ((xQueueReceive(xQueueBut, &botao, (TickType_t) 0)) || (xQueueReceive(xQueueADC, &adc, (TickType_t) 0))) {
       char botao_char = botao + '0';
@@ -591,6 +592,27 @@ void task_bluetooth(void) {
     }
 }
 
+void task_handshake(void) {
+  #ifndef DEBUG_SERIAL
+  config_usart0();
+  #endif
+  
+  hc05_init();
+ 
+  io_init();
+
+  char handshake;
+  while (1) {
+    if (usart_read(USART_COM, &handshake) == 0) {
+      if (handshake == 'H') {
+        pio_set(LED2_PIO, LED2_IDX_MASK);
+        xTaskCreate(task_bluetooth, "BT", TASK_BLUETOOTH_STACK_SIZE, NULL, TASK_BLUETOOTH_STACK_PRIORITY, NULL);
+      }
+    }
+  }
+
+}
+
 
 /************************************************************************/
 /* main                                                                 */
@@ -598,6 +620,9 @@ void task_bluetooth(void) {
 
 
 int main(void) {
+  pio_clear(LED1_PIO, LED1_IDX_MASK);
+  pio_clear(LED2_PIO, LED2_IDX_MASK);
+
   xQueueBut = xQueueCreate(32, sizeof(uint32_t));
   if (xQueueBut == NULL)
   printf("falha em criar a queue \n");
@@ -613,7 +638,7 @@ int main(void) {
 	configure_console();
 
 	/* Create task to make led blink */
-	xTaskCreate(task_bluetooth, "BLT", TASK_BLUETOOTH_STACK_SIZE, NULL,	TASK_BLUETOOTH_STACK_PRIORITY, NULL);
+  xTaskCreate(task_handshake, "Handshake", TASK_HANDSHAKE_STACK_SIZE, NULL,	TASK_HANDSHAKE_STACK_PRIORITY, &xTaskHandshakeHandle);
 
 	/* Start the scheduler. */
 	vTaskStartScheduler();

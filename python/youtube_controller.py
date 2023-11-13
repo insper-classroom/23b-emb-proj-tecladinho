@@ -3,6 +3,9 @@ import serial
 import argparse
 import time
 import logging
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
 
 class MyControllerMap:
     def __init__(self):
@@ -31,7 +34,7 @@ class SerialControllerInterface:
         self.ser = serial.Serial(port, baudrate=baudrate)
         self.mapping = MyControllerMap()
         self.incoming = '0'
-        self.update_c = 0
+        # self.update_c = 0
         pyautogui.PAUSE = 0  ## remove delay
     
     def update(self):
@@ -50,9 +53,18 @@ class SerialControllerInterface:
             logging.info(f"KEYDOWN {self.button[data]}") #if (self.update_c%20==0) else print(end='')
             pyautogui.keyDown(self.button[data])
 
-        self.incoming = self.ser.read()
+        # fader
+        valor = self.ser.read()
+        valor = int.from_bytes(valor)
+        logging.info(f"Analogico: {valor}")
+        devices = AudioUtilities.GetSpeakers()
+        interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+        volume = cast(interface, POINTER(IAudioEndpointVolume))
+        vol =  max(0, min(100, abs(int(((valor-80)/3950)*100))))
+        logging.info(f"NOVO VOLUME:  {vol}")
+        volume.SetMasterVolumeLevelScalar(vol/100, None)
         print() #if (self.update_c%20==0) else print(end='')
-        self.update_c += 1
+        # self.update_c += 1
 
 
 class DummyControllerInterface:
@@ -83,6 +95,8 @@ if __name__ == '__main__':
         controller = DummyControllerInterface()
     else:
         controller = SerialControllerInterface(port=args.serial_port, baudrate=args.baudrate)
-
+    fist = 1
     while True:
+        if fist:
+            controller.ser.write(b'0')
         controller.update()

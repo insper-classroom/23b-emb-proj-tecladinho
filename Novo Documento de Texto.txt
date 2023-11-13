@@ -49,9 +49,15 @@ class SerialControllerInterface:
         while self.incoming != b'X':
             self.incoming = self.ser.read()
             logging.debug("Received INCOMING: {}".format(self.incoming)) #if (self.update_c%20==0) else print(end='')
+        # while self.incoming != b'X':
+        #     self.incoming = self.ser.read()
+        #     logging.debug("Received INCOMING: {}".format(self.incoming)) if (self.update_c%20==0) else print(end='')
 
         data = self.ser.read()
         logging.debug("Received DATA: {}".format(data)) #if (self.update_c%20==0) else print(end='')
+        # while self.incoming != b'X':
+        #         self.incoming = self.ser.read()
+        #         logging.debug("Received INCOMING: {}".format(self.incoming))
 
         data = self.ser.read()
         afec = self.ser.read()
@@ -65,7 +71,8 @@ class SerialControllerInterface:
             pyautogui.keyDown(self.mapping.button[data])
 
         # fader
-        valor = int.from_bytes(afec, 'big')
+        valor = self.ser.read()
+        valor = int.from_bytes(valor, 'big')
         logging.info(f"Analogico: {valor}")
         devices = AudioUtilities.GetSpeakers()
         interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)

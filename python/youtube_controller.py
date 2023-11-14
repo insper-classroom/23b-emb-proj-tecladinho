@@ -104,8 +104,9 @@ if __name__ == '__main__':
         controller = DummyControllerInterface()
     else:
         controller = SerialControllerInterface(port=args.serial_port, baudrate=args.baudrate)
-
-    while True:
+    
+    running = True
+    while running:
         if controller.ser.isOpen() and conected==0:
             conected = 1
 
@@ -114,6 +115,6 @@ if __name__ == '__main__':
         controller.update()
         # Verificar se o programa deve parar (por exemplo, pressionando uma tecla)
         # Substitua isso por uma condição adequada ao seu caso
-        user_input = input()
-        if user_input.lower() == 'q':
+        pressed_key = pyautogui.keyDown()
+        if pressed_key == 'q':
             running = False

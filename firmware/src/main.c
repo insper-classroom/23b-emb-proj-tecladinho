@@ -544,7 +544,7 @@ static void config_AFEC_pot(Afec *afec, uint32_t afec_id, uint32_t afec_channel,
 }
 
 uint32_t usart_puts(uint8_t *pstring) {
-  uint32_t i;
+  uint32_t i = 0;
 
   while(*(pstring + i))
   if(uart_is_tx_empty(USART_COM))

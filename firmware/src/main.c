@@ -674,7 +674,7 @@ static void task_proc(void *pvParameters) {
 	adcData adc;
 	int lista_adc[10] = {0};
 	int soma = 0;
-	int media_movel = 0;
+	int media_movel;
 	int media_anterior = 0;
 	int i = 0;
 

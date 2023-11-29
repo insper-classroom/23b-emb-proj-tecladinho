@@ -125,6 +125,9 @@
 #define TASK_HANDSHAKE_STACK_SIZE            (4096/sizeof(portSTACK_TYPE))
 #define TASK_HANDSHAKE_STACK_PRIORITY        (tskIDLE_PRIORITY)
 
+#define TASK_ADC_STACK_SIZE (1024 * 10 / sizeof(portSTACK_TYPE))
+#define TASK_ADC_STACK_PRIORITY (tskIDLE_PRIORITY)
+
 extern void vApplicationStackOverflowHook(xTaskHandle *pxTask,  signed char *pcTaskName);
 extern void vApplicationIdleHook(void);
 extern void vApplicationTickHook(void);
@@ -133,10 +136,16 @@ extern void xPortSysTickHandler(void);
 
 QueueHandle_t xQueueBut;
 QueueHandle_t xQueueADC;
+QueueHandle_t xQueuePROC;
+QueueHandle_t xQueueVolume;
 
 TaskHandle_t xTaskHandshakeHandle;
 
 TimerHandle_t xTimer;
+
+typedef struct {
+	uint value;
+} adcData;
 
 /** prototypes */
 void but_C_callback(void);
@@ -195,10 +204,12 @@ void but_CS_callback(void) {
   if (!pio_get(BUT_CS_PIO, PIO_INPUT, BUT_CS_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 2;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_set(LED1_PIO, LED1_IDX_MASK);
   }
 }
 
@@ -206,10 +217,12 @@ void but_D_callback(void) {
   if (!pio_get(BUT_D_PIO, PIO_INPUT, BUT_D_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 3;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_set(LED1_PIO, LED1_IDX_MASK);
   }
 }
 
@@ -217,10 +230,12 @@ void but_DS_callback(void) {
   if (!pio_get(BUT_DS_PIO, PIO_INPUT, BUT_DS_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 4;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_set(LED1_PIO, LED1_IDX_MASK);
   }
 }
 
@@ -228,10 +243,12 @@ void but_E_callback(void) {
   if (!pio_get(BUT_E_PIO, PIO_INPUT, BUT_E_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 5;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_set(LED1_PIO, LED1_IDX_MASK);
   }
 }
 
@@ -239,10 +256,12 @@ void but_F_callback(void) {
   if (!pio_get(BUT_F_PIO, PIO_INPUT, BUT_F_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 6;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_set(LED1_PIO, LED1_IDX_MASK);
   }
 }
 
@@ -250,6 +269,7 @@ void but_FS_callback(void) {
   if (!pio_get(BUT_FS_PIO, PIO_INPUT, BUT_FS_IDX_MASK) == 0) {
     char botao = 0;
     xQueueSendFromISR(xQueueBut, (void *)&botao, 0);
+    pio_clear(LED1_PIO, LED1_IDX_MASK);
   }
   else {
     char botao = 7;
@@ -323,10 +343,10 @@ void but_B_callback(void) {
 }
 
 static void AFEC_pot_callback(void) {
-  uint32_t adc;
-  adc = afec_channel_get_value(AFEC_POT, AFEC_POT_CHANNEL);
-  BaseType_t xHigherPriorityTaskWoken = pdTRUE;
-  xQueueSendFromISR(xQueueADC, &adc, &xHigherPriorityTaskWoken);
+	adcData adc;
+	adc.value = afec_channel_get_value(AFEC_POT, AFEC_POT_CHANNEL);
+	BaseType_t xHigherPriorityTaskWoken = pdTRUE;
+	xQueueSendFromISR(xQueueADC, &adc, &xHigherPriorityTaskWoken);
 }
 
 /************************************************************************/
@@ -636,7 +656,47 @@ static void task_adc(void *pvParameters) {
                         vTimerCallback);
   xTimerStart(xTimer, 0);
 
+  // variável para recever dados da fila
+  adcData adc;
 
+  while (1) {
+    if (xQueueReceive(xQueuePROC, &adc, portMAX_DELAY) == pdTRUE) {
+	    printf("ADC: %d\n", adc.value);
+		xQueueSend(xQueueVolume, &adc.value, 0);
+    } 
+	else {
+      printf("Nao chegou um novo dado em 1 segundo");
+    }
+  }
+}
+
+static void task_proc(void *pvParameters) {
+	adcData adc;
+	int lista_adc[10] = {0};
+	int soma = 0;
+	int media_movel = 0;
+	int media_anterior = 0;
+	int i = 0;
+
+	for (;;) {
+		if (xQueueReceive(xQueueADC, &adc, portMAX_DELAY) == pdTRUE) {
+			soma -= lista_adc[i];
+			lista_adc[i] = adc.value;
+			soma += lista_adc[i];
+			
+			media_movel = soma / 10;
+			
+			if (abs(media_movel - media_anterior) > 50){
+				
+				printf("media: %d\n", media_movel);
+				xQueueSend(xQueueVolume, &media_movel, 0);
+				media_anterior = media_movel;
+			}
+			
+			// i volta pra 0 quando for 10
+			i = (i + 1) % 10;
+		}
+	}
 }
 
 void task_bluetooth(void) {
@@ -653,11 +713,9 @@ void task_bluetooth(void) {
   // Task não deve retornar.
   while(1) {
     // atualiza valor do botão
-    if ((xQueueReceive(xQueueBut, &botao, (TickType_t) 0)) || (xQueueReceive(xQueueADC, &adc, (TickType_t) 0))) {
+    if ((xQueueReceive(xQueueBut, &botao, (TickType_t) 0)) || (xQueueReceive(xQueueVolume, &adc, (TickType_t) 0))) {
       char botao_char = botao + '0';
       char adc_char = adc + '0';
-      
-
     
 		    while(!usart_is_tx_ready(USART_COM)) {
 			    vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -719,10 +777,28 @@ int main(void) {
   xQueueADC = xQueueCreate(32, sizeof(uint32_t));
   if (xQueueADC == NULL)
     printf("falha em criar a queue \n");
+	
+  if (xTaskCreate(task_adc, "ADC", TASK_ADC_STACK_SIZE, NULL,
+  TASK_ADC_STACK_PRIORITY, NULL) != pdPASS) {
+	  printf("Failed to create test ADC task\r\n");
+  }
+	
+  xQueuePROC = xQueueCreate(100, sizeof(adcData));
+  if (xQueuePROC == NULL)
+  printf("falha em criar a queue xQueuePROC \n");
+
+  xQueueVolume = xQueueCreate(100, sizeof(adcData));
+  if (xQueueVolume == NULL)
+  printf("falha em criar a queue xQueueVolume \n");
+	
+  if (xTaskCreate(task_proc, "PROC", TASK_ADC_STACK_SIZE, NULL,
+  TASK_ADC_STACK_PRIORITY, NULL) != pdPASS) {
+	  printf("Failed to create test PROC task\r\n");
+  }
 	/* Initialize the SAM system */
 	sysclk_init();
 	board_init();
-
+	
 	/* Initialize the console uart */
 	configure_console();
 
@@ -733,7 +809,7 @@ int main(void) {
 	vTaskStartScheduler();
 
   /* RTOS não deve chegar aqui !! */
-	while(1){}
+	while(1){	}
 
 	/* Will only get here if there was insufficient memory to create the idle task. */
 	return 0;
